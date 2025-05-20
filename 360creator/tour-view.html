@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>360° Tour View</title>
+    
+    <!-- Social Media Meta Tags -->
+    <meta property="og:title" content="360° Virtual Tour">
+    <meta property="og:description" content="Explore this amazing virtual tour">
+    <meta property="og:image" content="preview.jpg">
+    <meta property="og:url" content="">
+    
+    <!-- Marzipano Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/marzipano@0.10.2/dist/marzipano.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            background: #1c1c1c;
+            color: #fff;
+        }
+
+        .tour-header {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .tour-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .tour-description {
+            color: #ccc;
+            margin-bottom: 15px;
+        }
+
+        .tour-price {
+            font-size: 20px;
+            color: #4285f4;
+            font-weight: bold;
+        }
+
+        .viewer-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #000;
+        }
+
+        #pano {
+            width: 100%;
+            height: 100%;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px 20px;
+            border-radius: 30px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .control-btn {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .scene-list {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .scene-item {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            overflow: hidden;
+            border: 2px solid transparent;
+            transition: border-color 0.3s;
+        }
+
+        .scene-item:hover,
+        .scene-item.active {
+            border-color: #4285f4;
+        }
+
+        .scene-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .hotspot {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(66, 133, 244, 0.8);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            border: 2px solid white;
+            transition: transform 0.3s ease;
+        }
+
+        .hotspot:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .hotspot-tooltip {
+            position: absolute;
+            bottom: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            white-space: nowrap;
+            pointer-events: none;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .purchase-btn {
+            position: fixed;
+            right: 20px;
+            top: 20px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            z-index: 101;
+        }
+
+        .purchase-btn:hover {
+            background: #3367d6;
+        }
+
+        @media (max-width: 768px) {
+            .tour-header {
+                padding: 15px;
+            }
+
+            .tour-title {
+                font-size: 20px;
+            }
+
+            .controls {
+                bottom: 10px;
+                padding: 8px 15px;
+            }
+
+            .scene-list {
+                display: none;
+            }
+
+            .purchase-btn {
+                top: auto;
+                bottom: 70px;
+                right: 10px;
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="tour-header">
+        <h1 class="tour-title">Loading Tour...</h1>
+        <p class="tour-description"></p>
+        <div class="tour-price"></div>
+    </div>
+
+    <div class="viewer-container">
+        <div id="pano"></div>
+    </div>
+
+    <div class="controls">
+        <button class="control-btn" id="previous-scene" title="Previous Scene">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="control-btn" id="autorotate" title="Auto Rotate">
+            <i class="fas fa-sync-alt"></i>
+        </button>
+        <button class="control-btn" id="fullscreen" title="Fullscreen">
+            <i class="fas fa-expand"></i>
+        </button>
+        <button class="control-btn" id="next-scene" title="Next Scene">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+
+    <div class="scene-list"></div>
+    <button class="purchase-btn">Purchase Tour</button>
+
+    <script>
+        // Initialize tour data
+        let tourData = null;
+        let viewer = null;
+        let currentSceneIndex = 0;
+        let autorotateInterval = null;
+
+        // Create Marzipano autorotate object
+        const autorotate = Marzipano.autorotate({
+            yawSpeed: 0.05,         // Slower speed for smoother rotation
+            targetPitch: 0,
+            targetFov: Math.PI/2
+        });
+
+        // Load tour from localStorage
+        async function loadTourFromStorage(tourId) {
+            try {
+                // Get published tours from localStorage
+                const publishedTours = JSON.parse(localStorage.getItem('publishedTours')) || [];
+                
+                // Find the specific tour
+                const tour = publishedTours.find(t => t.id === tourId);
+                
+                if (!tour) {
+                    throw new Error('Tour not found');
+                }
+
+                // Return the tour data
+                return tour;
+            } catch (error) {
+                console.error('Error loading tour:', error);
+                throw error;
+            }
+        }
+
+        // Initialize the viewer when the page loads
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Get tour ID from URL parameters
+                const urlParams = new URLSearchParams(window.location.search);
+                const tourId = urlParams.get('tourId');
+
+                if (!tourId) {
+                    throw new Error('No tour ID specified');
+                }
+
+                // Load tour data from localStorage
+                tourData = await loadTourFromStorage(tourId);
+
+                if (!tourData || !tourData.scenes || tourData.scenes.length === 0) {
+                    throw new Error('No valid tour data available');
+                }
+
+                // Initialize the viewer
+                initializeViewer();
+                updateTourInfo();
+                setupControls();
+
+                // Update page title with tour name
+                document.title = `${tourData.title} - 360° Tour View`;
+
+            } catch (error) {
+                console.error('Error initializing tour:', error);
+                showError('Failed to load tour: ' + error.message);
+                // Add a return to gallery button when there's an error
+                addReturnToGalleryButton();
+            }
+        });
+
+        function initializeViewer() {
+            try {
+                const panoElement = document.getElementById('pano');
+                if (!panoElement) {
+                    throw new Error('Panorama element not found');
+                }
+
+                // Create viewer with error handling
+                viewer = new Marzipano.Viewer(panoElement, {
+                    controls: {
+                        mouseViewMode: 'drag'    // Enable drag to look around
+                    }
+                });
+
+                if (!viewer) {
+                    throw new Error('Failed to create viewer');
+                }
+
+                // Load scenes
+                if (!tourData.scenes || tourData.scenes.length === 0) {
+                    throw new Error('No scenes available in tour data');
+                }
+
+                console.log('Creating scenes for tour:', tourData);
+                tourData.scenes.forEach((sceneData, index) => {
+                    createScene(sceneData, index);
+                });
+
+            } catch (error) {
+                console.error('Error initializing viewer:', error);
+                showError('Failed to initialize viewer: ' + error.message);
+                addReturnToGalleryButton();
+            }
+        }
+
+        function createScene(sceneData, index) {
+            try {
+                // Create source
+                const source = Marzipano.ImageUrlSource.fromString(
+                    sceneData.imageUrl || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iIzNkM2QzZCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiNmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5ObyBJbWFnZSBBdmFpbGFibGU8L3RleHQ+PC9zdmc+'
+                );
+
+                // Create geometry for equirectangular projection
+                const geometry = new Marzipano.EquirectGeometry([
+                    { width: 1024, height: 512 }
+                ]);
+
+                // Create view
+                const limiter = Marzipano.RectilinearView.limit.traditional(
+                    1024,
+                    100 * Math.PI / 180
+                );
+                const view = new Marzipano.RectilinearView({
+                    yaw: 0,
+                    pitch: 0,
+                    fov: Math.PI / 2
+                }, limiter);
+
+                // Create and switch to scene
+                const scene = viewer.createScene({
+                    source: source,
+                    geometry: geometry,
+                    view: view,
+                    pinFirstLevel: true
+                });
+
+                // Store scene reference
+                sceneData.scene = scene;
+
+                // Add thumbnail to scene list
+                addSceneThumbnail(sceneData, index);
+
+                // If this is the first scene, switch to it
+                if (index === 0) {
+                    scene.switchTo();
+                }
+
+            } catch (error) {
+                console.error('Error creating scene:', error);
+                showError('Failed to create scene: ' + error.message);
+            }
+        }
+
+        function createHotspot(scene, hotspotData) {
+            const element = document.createElement('div');
+            element.className = 'hotspot';
+            
+            const icon = document.createElement('i');
+            icon.className = hotspotData.type === 'info' ? 'fas fa-info' : 'fas fa-link';
+            element.appendChild(icon);
+
+            if (hotspotData.title) {
+                const tooltip = document.createElement('div');
+                tooltip.className = 'hotspot-tooltip';
+                tooltip.textContent = hotspotData.title;
+                element.appendChild(tooltip);
+
+                element.addEventListener('mouseenter', () => {
+                    tooltip.style.display = 'block';
+                });
+
+                element.addEventListener('mouseleave', () => {
+                    tooltip.style.display = 'none';
+                });
+            }
+
+            if (hotspotData.type === 'link') {
+                element.addEventListener('click', () => {
+                    const targetIndex = tourData.scenes.findIndex(scene => scene.id === hotspotData.targetScene);
+                    if (targetIndex !== -1) {
+                        showScene(targetIndex);
+                    }
+                });
+            }
+
+            scene.hotspotContainer().createHotspot(element, hotspotData.position);
+        }
+
+        function showScene(index) {
+            try {
+                if (!tourData.scenes || index < 0 || index >= tourData.scenes.length) {
+                    throw new Error('Invalid scene index');
+                }
+
+                const sceneData = tourData.scenes[index];
+                if (!sceneData.scene) {
+                    throw new Error('Scene not properly initialized');
+                }
+
+                // Stop current autorotation if active
+                const autorotateButton = document.getElementById('autorotate');
+                if (autorotateButton.classList.contains('active')) {
+                    toggleAutorotate();
+                }
+
+                sceneData.scene.switchTo({
+                    transitionDuration: 1000
+                });
+
+                currentSceneIndex = index;
+                updateSceneList();
+                
+            } catch (error) {
+                console.error('Error showing scene:', error);
+                showError('Failed to show scene: ' + error.message);
+            }
+        }
+
+        function addSceneThumbnail(sceneData, index) {
+            const sceneList = document.querySelector('.scene-list');
+            const thumbnail = document.createElement('div');
+            thumbnail.className = 'scene-item';
+            if (index === 0) thumbnail.classList.add('active');
+            
+            const img = document.createElement('img');
+            img.src = sceneData.imageUrl || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iIzNkM2QzZCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiNmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5ObyBJbWFnZSBBdmFpbGFibGU8L3RleHQ+PC9zdmc+';
+            img.alt = `Scene ${index + 1}`;
+            thumbnail.appendChild(img);
+
+            thumbnail.addEventListener('click', () => {
+                showScene(index);
+            });
+
+            sceneList.appendChild(thumbnail);
+        }
+
+        function updateSceneList() {
+            document.querySelectorAll('.scene-item').forEach((item, index) => {
+                item.classList.toggle('active', index === currentSceneIndex);
+            });
+        }
+
+        function updateTourInfo() {
+            document.querySelector('.tour-title').textContent = tourData.title;
+            document.querySelector('.tour-description').textContent = tourData.description;
+            document.querySelector('.tour-price').textContent = tourData.price;
+            
+            // Update meta tags
+            document.querySelector('meta[property="og:title"]').content = tourData.title;
+            document.querySelector('meta[property="og:description"]').content = tourData.description;
+        }
+
+        function toggleAutorotate() {
+            const button = document.getElementById('autorotate');
+            
+            if (button.classList.contains('active')) {
+                // Stop autorotation
+                if (viewer) {
+                    viewer.stopMovement();
+                    viewer.setIdleMovement(Infinity);
+                }
+                button.classList.remove('active');
+            } else {
+                // Start autorotation
+                if (viewer) {
+                    viewer.startMovement(autorotate);
+                    viewer.setIdleMovement(3000, autorotate);
+                }
+                button.classList.add('active');
+            }
+        }
+
+        function setupControls() {
+            // Previous scene
+            document.getElementById('previous-scene').addEventListener('click', () => {
+                showScene(currentSceneIndex - 1);
+            });
+
+            // Next scene
+            document.getElementById('next-scene').addEventListener('click', () => {
+                showScene(currentSceneIndex + 1);
+            });
+
+            // Autorotate with improved handling
+            document.getElementById('autorotate').addEventListener('click', () => {
+                toggleAutorotate();
+            });
+
+            // Keyboard controls
+            document.addEventListener('keydown', (e) => {
+                switch(e.key) {
+                    case 'ArrowLeft':
+                        showScene(currentSceneIndex - 1);
+                        break;
+                    case 'ArrowRight':
+                        showScene(currentSceneIndex + 1);
+                        break;
+                    case ' ':
+                        toggleAutorotate();
+                        break;
+                }
+            });
+
+            // Fullscreen
+            document.getElementById('fullscreen').addEventListener('click', () => {
+                const elem = document.documentElement;
+                if (!document.fullscreenElement) {
+                    elem.requestFullscreen().catch(err => {
+                        console.log(`Error attempting to enable fullscreen: ${err.message}`);
+                    });
+                } else {
+                    document.exitFullscreen();
+                }
+            });
+
+            // Purchase button
+            document.querySelector('.purchase-btn').addEventListener('click', () => {
+                // Implement purchase functionality
+                alert('Purchase functionality to be implemented');
+            });
+        }
+
+        // Add error display function
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.style.position = 'fixed';
+            errorDiv.style.top = '50%';
+            errorDiv.style.left = '50%';
+            errorDiv.style.transform = 'translate(-50%, -50%)';
+            errorDiv.style.background = 'rgba(255, 0, 0, 0.8)';
+            errorDiv.style.color = 'white';
+            errorDiv.style.padding = '20px';
+            errorDiv.style.borderRadius = '5px';
+            errorDiv.style.zIndex = '1000';
+            errorDiv.textContent = message;
+            document.body.appendChild(errorDiv);
+            setTimeout(() => errorDiv.remove(), 5000);
+        }
+
+        // Add this new function to create a return button
+        function addReturnToGalleryButton() {
+            const button = document.createElement('button');
+            button.className = 'purchase-btn'; // Reuse the purchase button style
+            button.textContent = 'Return to Gallery';
+            button.onclick = () => window.location.href = 'tours-gallery.html';
+            button.style.left = '20px'; // Position on the left instead of right
+            document.body.appendChild(button);
+        }
+    </script>
+</body>
+</html> 

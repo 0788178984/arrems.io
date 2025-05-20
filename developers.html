@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ARREMS - Developers</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Allura&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Navigation Header -->
+  <header class="navbar fixed-top">
+    <div class="container-fluid px-4">
+      <!-- Left Side -->
+      <div class="header-left d-flex align-items-center">
+        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu">
+          <i class="fas fa-bars"></i>
+        </button>
+        <a class="navbar-brand ms-3" href="#">
+          <i class="fas fa-vr-cardboard logo-icon"></i>
+          <span class="logo-text">AR</span><small class="logo-text ms-1">REMS</small>
+        </a>
+      </div>
+
+      <!-- Center -->
+      <div class="header-center d-none d-lg-flex align-items-center">
+        
+        <nav class="main-nav">
+          <ul class="nav">
+            <li class="nav-item"><a class="nav-link" href="index.html">HOME</a></li>
+            <li class="nav-item"><a class="nav-link" href="explore.html">EXPLORE</a></li>
+            <li class="nav-item"><a class="nav-link active" href="developers.html">DEVELOPERS</a></li>
+            <li class="nav-item"><a class="nav-link" href="create3d.html">CREATE 3D</a></li>
+          </ul>
+        </nav>
+
+        <div class="search-box">
+          <div class="input-group">
+            <span class="input-group-text">
+              <i class="fas fa-search"></i>
+            </span>
+            <input type="text" class="form-control" placeholder="Search properties">
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Side -->
+      <div class="header-right">
+        <a href="#" class="btn register-btn" data-bs-toggle="modal" data-bs-target="#registerModal">Register</a>
+        <a href="#" class="btn signin-btn" data-bs-toggle="modal" data-bs-target="#signInModal">Sign In</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sidebar Menu -->
+  <div class="offcanvas offcanvas-start sidebar" tabindex="-1" id="sidebarMenu">
+    <div class="offcanvas-header">
+      <a class="sidebar-brand" href="index.html">
+        <i class="fas fa-vr-cardboard logo-icon"></i>
+        <span class="logo-text">AR</span><small class="logo-text ms-1">REMS</small>
+      </a>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body">
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link" href="index.html">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+          </a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+            <i class="fas fa-building"></i>
+            <span>Properties</span>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="explore.html#featured-photos"><i class="fas fa-image me-2"></i>Featured Photos</a></li>
+            <li><a class="dropdown-item" href="explore.html#featured-tours"><i class="fas fa-vr-cardboard me-2"></i>Featured Tours</a></li>
+            <li><a class="dropdown-item" href="explore.html#most-liked"><i class="fas fa-heart me-2"></i>Most Liked</a></li>
+            <li><a class="dropdown-item" href="explore.html#collections"><i class="fas fa-folder me-2"></i>Collections</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="explore.html">
+            <i class="fas fa-search"></i>
+            <span>Explore</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="create3d.html">
+            <i class="fas fa-cube"></i>
+            <span>Create 3D</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="developers.html">
+            <i class="fas fa-code"></i>
+            <span>Developers</span>
+          </a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="profile.html"><i class="fas fa-user-circle me-2"></i>My Profile</a></li>
+            <li><a class="dropdown-item" href="tours.html"><i class="fas fa-vr-cardboard me-2"></i>My Tours</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <main class="developers-main">
+    <!-- Hero Section -->
+    <section class="developers-hero">
+      <div class="container">
+        <div class="hero-content text-center" data-animate="fade-up">
+          <h1 class="hero-title">Meet Our Team</h1>
+          <p class="hero-subtitle">The innovative students behind ARREMS - Augmented Reality Real Estate Management System</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Team Section -->
+    <section class="team-section">
+      <div class="container">
+        <div class="row g-4 justify-content-center">
+          <!-- Developer 1 -->
+          <div class="col-lg-4 col-md-6" data-animate="fade-up" data-animate-delay="100">
+            <div class="team-card">
+              <div class="card-inner">
+                <div class="card-front">
+                  <div class="avatar-wrapper">
+                    <img src="assets/avatar1.jpg" alt="Developer 1" class="team-avatar">
+                  </div>
+                  <h3 class="team-name">Rebecca Nakabuye</h3>
+                  <p class="team-role">Frontend Developer</p>
+                  <p class="team-description">A passionate frontend developer with expertise in creating intuitive user interfaces. Specializes in React and modern web technologies.</p>
+                </div>
+                <div class="card-back">
+                  <h4>Expertise</h4>
+                  <ul class="expertise-list">
+                    <li><i class="fas fa-check-circle"></i> UI/UX Design</li>
+                    <li><i class="fas fa-check-circle"></i> React.js Development</li>
+                    <li><i class="fas fa-check-circle"></i> Responsive Design</li>
+                    <li><i class="fas fa-check-circle"></i> Web Accessibility</li>
+                  </ul>
+                  <p class="team-bio">Final year BIT student at Gulu University, passionate about creating accessible and user-friendly web applications.</p>
+                  <div class="social-links">
+                    <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Developer 2 -->
+          <div class="col-lg-4 col-md-6" data-animate="fade-up" data-animate-delay="200">
+            <div class="team-card">
+              <div class="card-inner">
+                <div class="card-front">
+                  <div class="avatar-wrapper">
+                    <img src="assets/avatar2.jpg" alt="Developer 2" class="team-avatar">
+                  </div>
+                  <h3 class="team-name">Asiimwe Lucky</h3>
+                  <p class="team-role">Backend Developer</p>
+                  <p class="team-description">Full-stack developer with a focus on backend architecture and database management. Expert in building scalable solutions.</p>
+                </div>
+                <div class="card-back">
+                  <h4>Expertise</h4>
+                  <ul class="expertise-list">
+                    <li><i class="fas fa-check-circle"></i> Node.js & Express</li>
+                    <li><i class="fas fa-check-circle"></i> Database Design</li>
+                    <li><i class="fas fa-check-circle"></i> API Development</li>
+                    <li><i class="fas fa-check-circle"></i> System Architecture</li>
+                  </ul>
+                  <p class="team-bio">Final Year Computer Science student at Gulu University with a passion for building robust backend systems and APIs.</p>
+                  <div class="social-links">
+                    <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Developer 3 -->
+          <div class="col-lg-4 col-md-6" data-animate="fade-up" data-animate-delay="300">
+            <div class="team-card">
+              <div class="card-inner">
+                <div class="card-front">
+                  <div class="avatar-wrapper">
+                    <img src="assets/avatar1.jpg" alt="Developer 3" class="team-avatar">
+                  </div>
+                  <h3 class="team-name">Barbra Namatovu</h3>
+                  <p class="team-role">AR/VR Specialist</p>
+                  <p class="team-description">Augmented Reality expert focused on creating immersive real estate experiences using cutting-edge AR technologies.</p>
+                </div>
+                <div class="card-back">
+                  <h4>Expertise</h4>
+                  <ul class="expertise-list">
+                    <li><i class="fas fa-check-circle"></i> AR Development</li>
+                    <li><i class="fas fa-check-circle"></i> 3D Modeling</li>
+                    <li><i class="fas fa-check-circle"></i> WebXR</li>
+                    <li><i class="fas fa-check-circle"></i> Unity3D</li>
+                  </ul>
+                  <p class="team-bio">Final year Computer Science student specializing in AR/VR technology and 3D visualization for real estate.</p>
+                  <div class="social-links">
+                    <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="row g-4">
+          <div class="col-lg-4">
+            <div class="footer-brand">
+              <h4>ARREMS</h4>
+              <p>Creating immersive virtual experiences for events that transcend boundaries.</p>
+            </div>
+            <div class="social-links">
+              <a href="#"><i class="fab fa-facebook"></i></a>
+              <a href="#"><i class="fab fa-twitter"></i></a>
+              <a href="#"><i class="fab fa-instagram"></i></a>
+              <a href="#"><i class="fab fa-linkedin"></i></a>
+            </div>
+          </div>
+          <div class="col-lg-2 col-md-4">
+            <h5>Quick Links</h5>
+            <ul class="footer-links">
+              <li><a href="#">About Us</a></li>
+              <li><a href="#">Services</a></li>
+              <li><a href="#">Events</a></li>
+              <li><a href="#">Contact</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-2 col-md-4">
+            <h5>Resources</h5>
+            <ul class="footer-links">
+              <li><a href="#">Blog</a></li>
+              <li><a href="#">Documentation</a></li>
+              <li><a href="#">Support</a></li>
+              <li><a href="#">FAQ</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-4 col-md-4">
+            <h5>Newsletter</h5>
+            <p>Stay updated with our latest news and events.</p>
+            <div class="newsletter-form">
+              <div class="input-group">
+                <input type="email" class="form-control" placeholder="Enter your email">
+                <button class="btn btn-primary">Subscribe</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="row align-items-center">
+          <div class="col-md-6">
+            <p class="mb-0">&copy; 2025 ARREMS. All rights reserved.</p>
+          </div>
+          <div class="col-md-6 text-md-end">
+            <ul class="footer-bottom-links">
+              <li><a href="#">Privacy Policy</a></li>
+              <li><a href="#">Terms of Service</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Sign In Modal -->
+  <div class="modal fade" id="signInModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <h5 class="modal-title">Welcome Back</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="auth-form">
+            <div class="social-auth">
+              <button class="social-btn google">
+                <i class="fab fa-google"></i>
+                Continue with Google
+              </button>
+              <button class="social-btn apple">
+                <i class="fab fa-apple"></i>
+                Continue with Apple
+              </button>
+            </div>
+            <div class="divider">
+              <span>or</span>
+            </div>
+            <form>
+              <div class="form-floating mb-3">
+                <input type="email" class="form-control" id="signInEmail" placeholder="name@example.com">
+                <label for="signInEmail">Email address</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input type="password" class="form-control" id="signInPassword" placeholder="Password">
+                <label for="signInPassword">Password</label>
+              </div>
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="rememberMe">
+                  <label class="form-check-label" for="rememberMe">Remember me</label>
+                </div>
+                <a href="#" class="forgot-password">Forgot password?</a>
+              </div>
+              <button type="submit" class="btn btn-primary w-100">Sign In</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Register Modal -->
+  <div class="modal fade" id="registerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <h5 class="modal-title">Create Account</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="auth-form">
+            <div class="social-auth">
+              <button class="social-btn google">
+                <i class="fab fa-google"></i>
+                Continue with Google
+              </button>
+              <button class="social-btn apple">
+                <i class="fab fa-apple"></i>
+                Continue with Apple
+              </button>
+            </div>
+            <div class="divider">
+              <span>or</span>
+            </div>
+            <form>
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="registerName" placeholder="Full name">
+                <label for="registerName">Full name</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input type="email" class="form-control" id="registerEmail" placeholder="name@example.com">
+                <label for="registerEmail">Email address</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input type="password" class="form-control" id="registerPassword" placeholder="Password">
+                <label for="registerPassword">Password</label>
+              </div>
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="termsCheck">
+                <label class="form-check-label" for="termsCheck">
+                  I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+                </label>
+              </div>
+              <button type="submit" class="btn btn-primary w-100">Create Account</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Custom Scripts -->
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/auth-forms.js"></script>
+  <script src="developers.js"></script>
+  
+  <!-- Animation Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const animatedElements = document.querySelectorAll('[data-animate]');
+      
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('animated');
+          }
+        });
+      });
+      
+      animatedElements.forEach(element => {
+        observer.observe(element);
+      });
+    });
+  </script>
+</body>
+</html>

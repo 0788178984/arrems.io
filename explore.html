@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ARREMS - Explore</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Allura&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Navigation Header -->
+  <header class="navbar fixed-top">
+    <div class="container-fluid px-4">
+      <!-- Left Side -->
+      <div class="header-left d-flex align-items-center">
+        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu">
+          <i class="fas fa-bars"></i>
+        </button>
+        <a class="navbar-brand ms-3" href="#">
+          <i class="fas fa-vr-cardboard logo-icon"></i>
+          <span class="logo-text">AR</span><small class="logo-text ms-1">REMS</small>
+        </a>
+      </div>
+
+      <!-- Center -->
+      <div class="header-center d-none d-lg-flex align-items-center">
+      
+        <nav class="main-nav">
+          <ul class="nav">
+            <li class="nav-item"><a class="nav-link" href="index.html">HOME</a></li>
+            <li class="nav-item"><a class="nav-link active" href="explore.html">EXPLORE</a></li>
+            <li class="nav-item"><a class="nav-link" href="developers.html">DEVELOPERS</a></li>
+            <li class="nav-item"><a class="nav-link" href="create3d.html">CREATE 3D</a></li>
+          </ul>
+        </nav>
+
+        <div class="search-box">
+          <div class="input-group">
+            <span class="input-group-text">
+              <i class="fas fa-search"></i>
+            </span>
+            <input type="text" class="form-control" placeholder="Search properties">
+          </div>
+        </div>
+        
+      </div>
+
+      <!-- Right Side -->
+      <div class="header-right d-none d-md-flex">
+        <a href="#" class="btn register-btn" data-bs-toggle="modal" data-bs-target="#registerModal">Register</a>
+        <a href="#" class="btn signin-btn" data-bs-toggle="modal" data-bs-target="#signInModal">Sign In</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sidebar Menu -->
+  <div class="offcanvas offcanvas-start sidebar" tabindex="-1" id="sidebarMenu">
+    <div class="offcanvas-header">
+      <a class="sidebar-brand" href="index.html">
+        <i class="fas fa-vr-cardboard logo-icon"></i>
+        <span class="logo-text">AR</span><small class="logo-text ms-1">REMS</small>
+      </a>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body">
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link" href="index.html">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+          </a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+            <i class="fas fa-building"></i>
+            <span>Properties</span>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="explore.html#featured-photos"><i class="fas fa-image me-2"></i>Featured Photos</a></li>
+            <li><a class="dropdown-item" href="explore.html#featured-tours"><i class="fas fa-vr-cardboard me-2"></i>Featured Tours</a></li>
+            <li><a class="dropdown-item" href="explore.html#most-liked"><i class="fas fa-heart me-2"></i>Most Liked</a></li>
+            <li><a class="dropdown-item" href="explore.html#collections"><i class="fas fa-folder me-2"></i>Collections</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="explore.html">
+            <i class="fas fa-search"></i>
+            <span>Explore</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="create3d.html">
+            <i class="fas fa-cube"></i>
+            <span>Create 3D</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="developers.html">
+            <i class="fas fa-code"></i>
+            <span>Developers</span>
+          </a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="profile.html"><i class="fas fa-user-circle me-2"></i>My Profile</a></li>
+            <li><a class="dropdown-item" href="tours.html"><i class="fas fa-vr-cardboard me-2"></i>My Tours</a></li>
+          </ul>
+        </li>
+      </ul>
+      
+      <!-- Mobile Auth Buttons -->
+      <div class="mobile-auth d-md-none mt-4">
+        <div class="d-grid gap-2">
+          <a href="#" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#signInModal">
+            <i class="fas fa-sign-in-alt me-2"></i>Sign In
+          </a>
+          <a href="#" class="btn btn-outline-primary w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
+            <i class="fas fa-user-plus me-2"></i>Register
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main class="explore-main">
+    <!-- Filter Navigation -->
+    <nav class="explore-nav">
+      <div class="container d-flex justify-content-center">
+        <ul class="nav nav-pills">
+          <li class="nav-item">
+            <a class="nav-link active" href="#featured-photos">Featured Photos</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#featured-tours">Featured Tours</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#most-liked">Most Liked</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#collections">Collections</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Property Grid -->
+    <section class="property-gallery">
+      <div class="container">
+        <div class="gallery-grid">
+          <!-- Cards 1-4 (First Row) -->
+          <div class="gallery-item">
+                      <div class="property-card" data-iframe-src="https://0779654710.github.io/0779654710-asmart.io/fos">
+              <div class="card-header">
+                <div class="user-info">
+                  <img src="assets/avatar1.jpg" alt="User Avatar" class="user-avatar">
+                  <span class="user-name">Rebecca Nakabuye</span>
+                </div>
+                <span class="property-type">Luxury Villa</span>
+              </div>
+              <div class="card-image">
+                <img src="assets/img2.jpg" alt="Property Interior" loading="lazy" onerror="this.onerror=null; this.src='assets/img1.jpg';">
+                <div class="image-overlay">
+                  <span class="view-360"><i class="fas fa-vr-cardboard"></i> 360°</span>
+                </div>
+              </div>
+              <div class="card-footer">
+                <div class="engagement">
+                  <span class="likes"><i class="far fa-heart"></i> 142</span>
+                  <span class="comments"><i class="far fa-comment"></i> 23</span>
+                  <span class="views"><i class="far fa-eye"></i> 1.2K</span>
+                </div>
+                <button class="more-options"><i class="fas fa-ellipsis-h"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Repeat similar structure for cards 2-16 with different images and details -->
+          <div class="gallery-item">
+            <div class="property-card" data-iframe-src="https://0779654710.github.io/0779654710-asmart.io/educ1">
+              <div class="card-header">
+                <div class="user-info">
+                  <img src="assets/avatar2.jpg" alt="User Avatar" class="user-avatar">
+                  <span class="user-name">Barbra Namatovu</span>
+                </div>
+                <span class="property-type">Modern Apartment</span>
+              </div>
+              <div class="card-image">
+                <img src="assets/.jpg" alt="Property Interior" loading="lazy" onerror="this.onerror=null; this.src='assets/img2.jpg';">
+                <div class="image-overlay">
+                  <span class="view-360"><i class="fas fa-vr-cardboard"></i> 360°</span>
+                </div>
+              </div>
+              <div class="card-footer">
+                <div class="engagement">
+                  <span class="likes"><i class="far fa-heart"></i> 98</span>
+                  <span class="comments"><i class="far fa-comment"></i> 15</span>
+                  <span class="views"><i class="far fa-eye"></i> 856</span>
+                </div>
+                <button class="more-options"><i class="fas fa-ellipsis-h"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="gallery-item">
+            <div class="property-card" data-iframe-src="https://kuula.co/share/collection/71FTP?logo=1&info=1&fs=1&vr=0&sd=1&thumbs=1">
+              <div class="card-header">
+                <div class="user-info">
+                  <img src="assets/avatar3.jpg" alt="User Avatar" class="user-avatar">
+                  <span class="user-name">Lucky Asiimwe</span>
+                </div>
+                <span class="property-type">Beach House</span>
+              </div>
+              <div class="card-image">
+                <img src="assets/img3.jpg" alt="Property View" loading="lazy" onerror="this.onerror=null; this.src='assets/img3.jpg';">
+                <div class="image-overlay">
+                  <span class="view-360"><i class="fas fa-vr-cardboard"></i> 360°</span>
+                </div>
+              </div>
+              <div class="card-footer">
+                <div class="engagement">
+                  <span class="likes"><i class="far fa-heart"></i> 76</span>
+                  <span class="comments"><i class="far fa-comment"></i> 8</span>
+                  <span class="views"><i class="far fa-eye"></i> 654</span>
+                </div>
+                <button class="more-options"><i class="fas fa-ellipsis-h"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="gallery-item">
+            <div class="property-card" data-iframe-src="https://kuula.co/share/collection/71FTP?logo=1&info=1&fs=1&vr=0&sd=1&thumbs=1">
+              <div class="card-header">
+                <div class="user-info">
+                  <img src="assets/avatar4.jpg" alt="User Avatar" class="user-avatar">
+                  <span class="user-name">Alubo Grace</span>
+                </div>
+                <span class="property-type">City Penthouse</span>
+              </div>
+              <div class="card-image">
+                <img src="assets/img4.jpg" alt="Property Interior" loading="lazy" onerror="this.onerror=null; this.src='assets/img4.jpg';">
+                <div class="image-overlay">
+                  <span class="view-360"><i class="fas fa-vr-cardboard"></i> 360°</span>
+                </div>
+              </div>
+              <div class="card-footer">
+                <div class="engagement">
+                  <span class="likes"><i class="far fa-heart"></i> 184</span>
+                  <span class="comments"><i class="far fa-comment"></i> 31</span>
+                  <span class="views"><i class="far fa-eye"></i> 2.1K</span>
+                </div>
+                <button class="more-options"><i class="fas fa-ellipsis-h"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cards 5-8 (Second Row) -->
+          <div class="gallery-item">
+            <div class="property-card" data-iframe-src="https://kuula.co/share/collection/71FTP?logo=1&info=1&fs=1&vr=0&sd=1&thumbs=1">
+              <div class="card-header">
+                <div class="user-info">
+                  <img src="assets/avatar1.jpg" alt="User Avatar" class="user-avatar">
+                  <span class="user-name">Travor Rwothmio</span>
+                </div>
+                <span class="property-type">Garden Villa</span>
+              </div>
+              <div class="card-image">
+                <img src="assets/img5.jpg" alt="Property View" loading="lazy" onerror="this.onerror=null; this.src='assets/img5.jpg';">
+                <div class="image-overlay">
+                  <span class="view-360"><i class="fas fa-vr-cardboard"></i> 360°</span>
+                </div>
+              </div>
+              <div class="card-footer">
+                <div class="engagement">
+                  <span class="likes"><i class="far fa-heart"></i> 167</span>
+                  <span class="comments"><i class="far fa-comment"></i> 28</span>
+                  <span class="views"><i class="far fa-eye"></i> 1.5K</span>
+                </div>
+                <button class="more-options"><i class="fas fa-ellipsis-h"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Add similar structure for cards 6-16 -->
+          <!-- Cards 6-8 -->
+          <div class="gallery-item">
+            <div class="property-card" data-iframe-src="https://kuula.co/share/collection/76FTP?logo=1&info=1&fs=1&vr=0&sd=1&thumbs=1">
+              <div class="card-header">
+                <div class="user-info">
+                  <img src="assets/avatar2.jpg" alt="User Avatar" class="user-avatar">
+                  <span class="user-name">Saro Wiwa</span>
+                </div>
+                <span class="property-type">Studio Apartment</span>
+              </div>
+              <div class="card-image">
+                <img src="assets/img6.jpg" alt="Property Interior" loading="lazy" onerror="this.onerror=null; this.src='assets/img6.jpg';">
+                <div class="image-overlay">
+                  <span class="view-360"><i class="fas fa-vr-cardboard"></i> 360°</span>
+                </div>
+              </div>
+              <div class="card-footer">
+                <div class="engagement">
+                  <span class="likes"><i class="far fa-heart"></i> 112</span>
+                  <span class="comments"><i class="far fa-comment"></i> 19</span>
+                  <span class="views"><i class="far fa-eye"></i> 987</span>
+                </div>
+                <button class="more-options"><i class="fas fa-ellipsis-h"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="gallery-item">
+            <div class="property-card" data-iframe-src="https://kuula.co/share/collection/77FTP?logo=1&info=1&fs=1&vr=0&sd=1&thumbs=1">
+              <div class="card-header">
+                <div class="user-info">
+                  <img src="assets/avatar3.jpg" alt="User Avatar" class="user-avatar">
+                  <span class="user-name">Samuel Wejuli</span>
+                </div>
+                <span class="property-type">Mountain Cabin</span>
+              </div>
+              <div class="card-image">
+                <img src="assets/img7.jpg" alt="Property View" loading="lazy" onerror="this.onerror=null; this.src='assets/img7.jpg';">
+                <div class="image-overlay">
+                  <span class="view-360"><i class="fas fa-vr-cardboard"></i> 360°</span>
+                </div>
+              </div>
+              <div class="card-footer">
+                <div class="engagement">
+                  <span class="likes"><i class="far fa-heart"></i> 89</span>
+                  <span class="comments"><i class="far fa-comment"></i> 12</span>
+                  <span class="views"><i class="far fa-eye"></i> 743</span>
+                </div>
+                <button class="more-options"><i class="fas fa-ellipsis-h"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="gallery-item">
+            <div class="property-card" data-iframe-src="https://kuula.co/share/collection/78FTP?logo=1&info=1&fs=1&vr=0&sd=1&thumbs=1">
+              <div class="card-header">
+                <div class="user-info">
+                  <img src="assets/avatar4.jpg" alt="User Avatar" class="user-avatar">
+                  <span class="user-name">Atimango Mercy</span>
+                </div>
+                <span class="property-type">Lake House</span>
+              </div>
+              <div class="card-image">
+                <img src="assets/img8.jpg" alt="Property Interior" loading="lazy" onerror="this.onerror=null; this.src='assets/img8.jpg';">
+                <div class="image-overlay">
+                  <span class="view-360"><i class="fas fa-vr-cardboard"></i> 360°</span>
+                </div>
+              </div>
+              <div class="card-footer">
+                <div class="engagement">
+                  <span class="likes"><i class="far fa-heart"></i> 156</span>
+                  <span class="comments"><i class="far fa-comment"></i> 27</span>
+                  <span class="views"><i class="far fa-eye"></i> 1.8K</span>
+                </div>
+                <button class="more-options"><i class="fas fa-ellipsis-h"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cards 9-12 -->
+          <div class="gallery-item">
+            <div class="property-card" data-iframe-src="https://kuula.co/share/collection/79FTP?logo=1&info=1&fs=1&vr=0&sd=1&thumbs=1">
+              <div class="card-header">
+                <div class="user-info">
+                  <img src="assets/avatar1.jpg" alt="User Avatar" class="user-avatar">
+                  <span class="user-name">Atwooki Mark</span>
+                </div>
+                <span class="property-type">Urban Loft</span>
+              </div>
+              <div class="card-image">
+                <img src="assets/img9.jpg" alt="Property View" loading="lazy" onerror="this.onerror=null; this.src='assets/img9.jpg';">
+                <div class="image-overlay">
+                  <span class="view-360"><i class="fas fa-vr-cardboard"></i> 360°</span>
+                </div>
+              </div>
+              <div class="card-footer">
+                <div class="engagement">
+                  <span class="likes"><i class="far fa-heart"></i> 134</span>
+                  <span class="comments"><i class="far fa-comment"></i> 21</span>
+                  <span class="views"><i class="far fa-eye"></i> 1.1K</span>
+                </div>
+                <button class="more-options"><i class="fas fa-ellipsis-h"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Add similar structure for cards 10-16 -->
+          <div class="gallery-item">
+            <div class="property-card" data-iframe-src="https://kuula.co/share/collection/80FTP?logo=1&info=1&fs=1&vr=0&sd=1&thumbs=1">
+              <div class="card-header">
+                <div class="user-info">
+                  <img src="assets/avatar2.jpg" alt="User Avatar" class="user-avatar">
+                  <span class="user-name">Godrine Gashodo</span>
+                </div>
+                <span class="property-type">Seaside Villa</span>
+              </div>
+              <div class="card-image">
+                <img src="assets/img10.jpg" alt="Property Interior" loading="lazy" onerror="this.onerror=null; this.src='assets/img10.jpg';">
+                <div class="image-overlay">
+                  <span class="view-360"><i class="fas fa-vr-cardboard"></i> 360°</span>
+                </div>
+              </div>
+              <div class="card-footer">
+                <div class="engagement">
+                  <span class="likes"><i class="far fa-heart"></i> 178</span>
+                  <span class="comments"><i class="far fa-comment"></i> 29</span>
+                  <span class="views"><i class="far fa-eye"></i> 2.3K</span>
+                </div>
+                <button class="more-options"><i class="fas fa-ellipsis-h"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="gallery-item">
+            <div class="property-card" data-iframe-src="https://kuula.co/share/collection/81FTP?logo=1&info=1&fs=1&vr=0&sd=1&thumbs=1">
+              <div class="card-header">
+                <div class="user-info">
+                  <img src="assets/avatar3.jpg" alt="User Avatar" class="user-avatar">
+                  <span class="user-name">Chris Kyomuhendo</span>
+                </div>
+                <span class="property-type">Country Estate</span>
+              </div>
+              <div class="card-image">
+                <img src="assets/img11.jpg" alt="Property View" loading="lazy" onerror="this.onerror=null; this.src='assets/img11.jpg';">
+                <div class="image-overlay">
+                  <span class="view-360"><i class="fas fa-vr-cardboard"></i> 360°</span>
+                </div>
+              </div>
+              <div class="card-footer">
+                <div class="engagement">
+                  <span class="likes"><i class="far fa-heart"></i> 92</span>
+                  <span class="comments"><i class="far fa-comment"></i> 14</span>
+                  <span class="views"><i class="far fa-eye"></i> 876</span>
+                </div>
+                <button class="more-options"><i class="fas fa-ellipsis-h"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="gallery-item">
+            <div class="property-card" data-iframe-src="https://kuula.co/share/collection/82FTP?logo=1&info=1&fs=1&vr=0&sd=1&thumbs=1">
+              <div class="card-header">
+                <div class="user-info">
+                  <img src="assets/avatar4.jpg" alt="User Avatar" class="user-avatar">
+                  <span class="user-name">Akram</span>
+                </div>
+                <span class="property-type">Forest Retreat</span>
+              </div>
+              <div class="card-image">
+                <img src="assets/img12.jpg" alt="Property Interior" loading="lazy" onerror="this.onerror=null; this.src='assets/img12.jpg';">
+                <div class="image-overlay">
+                  <span class="view-360"><i class="fas fa-vr-cardboard"></i> 360°</span>
+                </div>
+              </div>
+              <div class="card-footer">
+                <div class="engagement">
+                  <span class="likes"><i class="far fa-heart"></i> 145</span>
+                  <span class="comments"><i class="far fa-comment"></i> 25</span>
+                  <span class="views"><i class="far fa-eye"></i> 1.6K</span>
+                </div>
+                <button class="more-options"><i class="fas fa-ellipsis-h"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cards 13-16 -->
+          <div class="gallery-item">
+            <div class="property-card" data-iframe-src="https://kuula.co/share/collection/83FTP?logo=1&info=1&fs=1&vr=0&sd=1&thumbs=1">
+              <div class="card-header">
+                <div class="user-info">
+                  <img src="assets/avatar1.jpg" alt="User Avatar" class="user-avatar">
+                  <span class="user-name">Nancy Aber</span>
+                </div>
+                <span class="property-type">Desert Oasis</span>
+              </div>
+              <div class="card-image">
+                <img src="assets/img13.jpg" alt="Property View" loading="lazy" onerror="this.onerror=null; this.src='assets/img13.jpg';">
+                <div class="image-overlay">
+                  <span class="view-360"><i class="fas fa-vr-cardboard"></i> 360°</span>
+                </div>
+              </div>
+              <div class="card-footer">
+                <div class="engagement">
+                  <span class="likes"><i class="far fa-heart"></i> 167</span>
+                  <span class="comments"><i class="far fa-comment"></i> 28</span>
+                  <span class="views"><i class="far fa-eye"></i> 1.9K</span>
+                </div>
+                <button class="more-options"><i class="fas fa-ellipsis-h"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="gallery-item">
+            <div class="property-card" data-iframe-src="https://kuula.co/share/collection/84FTP?logo=1&info=1&fs=1&vr=0&sd=1&thumbs=1">
+              <div class="card-header">
+                <div class="user-info">
+                  <img src="assets/avatar2.jpg" alt="User Avatar" class="user-avatar">
+                  <span class="user-name">Emily Adoch</span>
+                </div>
+                <span class="property-type">Sky Penthouse</span>
+              </div>
+              <div class="card-image">
+                <img src="assets/img14.jpg" alt="Property Interior" loading="lazy" onerror="this.onerror=null; this.src='assets/img14.jpg';">
+                <div class="image-overlay">
+                  <span class="view-360"><i class="fas fa-vr-cardboard"></i> 360°</span>
+                </div>
+              </div>
+              <div class="card-footer">
+                <div class="engagement">
+                  <span class="likes"><i class="far fa-heart"></i> 198</span>
+                  <span class="comments"><i class="far fa-comment"></i> 34</span>
+                  <span class="views"><i class="far fa-eye"></i> 2.5K</span>
+                </div>
+                <button class="more-options"><i class="fas fa-ellipsis-h"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="gallery-item">
+            <div class="property-card" data-iframe-src="https://kuula.co/share/collection/85FTP?logo=1&info=1&fs=1&vr=0&sd=1&thumbs=1">
+              <div class="card-header">
+                <div class="user-info">
+                  <img src="assets/avatar3.jpg" alt="User Avatar" class="user-avatar">
+                  <span class="user-name">Daniel Wokorach</span>
+                </div>
+                <span class="property-type">Historic Manor</span>
+              </div>
+              <div class="card-image">
+                <img src="assets/img15.jpg" alt="Property View" loading="lazy" onerror="this.onerror=null; this.src='assets/img15.jpg';">
+                <div class="image-overlay">
+                  <span class="view-360"><i class="fas fa-vr-cardboard"></i> 360°</span>
+                </div>
+              </div>
+              <div class="card-footer">
+                <div class="engagement">
+                  <span class="likes"><i class="far fa-heart"></i> 156</span>
+                  <span class="comments"><i class="far fa-comment"></i> 26</span>
+                  <span class="views"><i class="far fa-eye"></i> 1.7K</span>
+                </div>
+                <button class="more-options"><i class="fas fa-ellipsis-h"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="gallery-item">
+            <div class="property-card" data-iframe-src="https://kuula.co/share/collection/86FTP?logo=1&info=1&fs=1&vr=0&sd=1&thumbs=1">
+              <div class="card-header">
+                <div class="user-info">
+                  <img src="assets/avatar4.jpg" alt="User Avatar" class="user-avatar">
+                  <span class="user-name">Olivia Brown</span>
+                </div>
+                <span class="property-type">Eco Lodge</span>
+              </div>
+              <div class="card-image">
+                <img src="assets/img16.jpg" alt="Property Interior" loading="lazy" onerror="this.onerror=null; this.src='assets/img16.jpg';">
+                <div class="image-overlay">
+                  <span class="view-360"><i class="fas fa-vr-cardboard"></i> 360°</span>
+                </div>
+              </div>
+              <div class="card-footer">
+                <div class="engagement">
+                  <span class="likes"><i class="far fa-heart"></i> 189</span>
+                  <span class="comments"><i class="far fa-comment"></i> 32</span>
+                  <span class="views"><i class="far fa-eye"></i> 2.2K</span>
+                </div>
+                <button class="more-options"><i class="fas fa-ellipsis-h"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Load More Button -->
+        <div class="text-center mt-4">
+          <button class="btn load-more">
+            Load More <i class="fas fa-spinner ms-2"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Property Viewer Modal -->
+  <div class="modal property-viewer-modal fade" id="propertyViewerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <div class="modal-title-wrapper">
+            <h4 class="modal-title property-title">Property Title</h4>
+            <p class="property-location mb-0"><i class="fas fa-map-marker-alt"></i> <span>Location</span></p>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-0">
+          <div class="property-viewer">
+            <div class="viewer-header">
+              <div class="user-info">
+                <img src="" alt="User Avatar" class="user-avatar">
+                <div class="user-details">
+                  <span class="user-name">User Name</span>
+                  <span class="property-type">Property Type</span>
+                </div>
+              </div>
+              <div class="viewer-actions">
+                <button class="btn btn-like">
+                  <i class="far fa-heart"></i>
+                  <span class="likes-count">0</span>
+                </button>
+                <button class="btn btn-share">
+                  <i class="fas fa-share-alt"></i>
+                </button>
+                <button class="btn btn-fullscreen">
+                  <i class="fas fa-expand"></i>
+                </button>
+              </div>
+            </div>
+            <div class="viewer-content">
+              <iframe src="" frameborder="0" allowfullscreen></iframe>
+            </div>
+            <div class="viewer-footer">
+              <div class="property-details">
+                <div class="detail-item">
+                  <i class="fas fa-bed"></i>
+                  <span class="bedrooms">3 Bedrooms</span>
+                </div>
+                <div class="detail-item">
+                  <i class="fas fa-bath"></i>
+                  <span class="bathrooms">2 Bathrooms</span>
+                </div>
+                <div class="detail-item">
+                  <i class="fas fa-ruler-combined"></i>
+                  <span class="area">1,500 sqft</span>
+                </div>
+                <div class="detail-item">
+                  <i class="fas fa-car"></i>
+                  <span class="parking">2 Parking</span>
+                </div>
+              </div>
+              <div class="property-engagement">
+                <span class="views"><i class="far fa-eye"></i> <span class="views-count">0</span> views</span>
+                <span class="comments"><i class="far fa-comment"></i> <span class="comments-count">0</span> comments</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sign In Modal -->
+  <div class="modal fade" id="signInModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <h5 class="modal-title">Welcome Back</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="auth-form">
+            <div class="social-auth">
+              <button class="social-btn google">
+                <i class="fab fa-google"></i>
+                Continue with Google
+              </button>
+              <button class="social-btn apple">
+                <i class="fab fa-apple"></i>
+                Continue with Apple
+              </button>
+            </div>
+            <div class="divider">
+              <span>or</span>
+            </div>
+            <form>
+              <div class="form-floating mb-3">
+                <input type="email" class="form-control" id="signInEmail" placeholder="name@example.com">
+                <label for="signInEmail">Email address</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input type="password" class="form-control" id="signInPassword" placeholder="Password">
+                <label for="signInPassword">Password</label>
+              </div>
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="rememberMe">
+                  <label class="form-check-label" for="rememberMe">Remember me</label>
+                </div>
+                <a href="#" class="forgot-password">Forgot password?</a>
+              </div>
+              <button type="submit" class="btn btn-primary w-100">Sign In</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Register Modal -->
+  <div class="modal fade" id="registerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <h5 class="modal-title">Create Account</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="auth-form">
+            <div class="social-auth">
+              <button class="social-btn google">
+                <i class="fab fa-google"></i>
+                Continue with Google
+              </button>
+              <button class="social-btn apple">
+                <i class="fab fa-apple"></i>
+                Continue with Apple
+              </button>
+            </div>
+            <div class="divider">
+              <span>or</span>
+            </div>
+            <form>
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="registerName" placeholder="Full name">
+                <label for="registerName">Full name</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input type="email" class="form-control" id="registerEmail" placeholder="name@example.com">
+                <label for="registerEmail">Email address</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input type="password" class="form-control" id="registerPassword" placeholder="Password">
+                <label for="registerPassword">Password</label>
+              </div>
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="termsCheck">
+                <label class="form-check-label" for="termsCheck">
+                  I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+                </label>
+              </div>
+              <button type="submit" class="btn btn-primary w-100">Create Account</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="row g-4">
+          <div class="col-lg-4">
+            <div class="footer-brand">
+              <h4>ARREMS</h4>
+              <p>Creating immersive virtual experiences for events that transcend boundaries.</p>
+            </div>
+            <div class="social-links">
+              <a href="#"><i class="fab fa-facebook"></i></a>
+              <a href="#"><i class="fab fa-twitter"></i></a>
+              <a href="#"><i class="fab fa-instagram"></i></a>
+              <a href="#"><i class="fab fa-linkedin"></i></a>
+            </div>
+          </div>
+          <div class="col-lg-2 col-md-4">
+            <h5>Quick Links</h5>
+            <ul class="footer-links">
+              <li><a href="#">About Us</a></li>
+              <li><a href="#">Services</a></li>
+              <li><a href="#">Events</a></li>
+              <li><a href="#">Contact</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-2 col-md-4">
+            <h5>Resources</h5>
+            <ul class="footer-links">
+              <li><a href="#">Blog</a></li>
+              <li><a href="#">Documentation</a></li>
+              <li><a href="#">Support</a></li>
+              <li><a href="#">FAQ</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-4 col-md-4">
+            <h5>Newsletter</h5>
+            <p>Stay updated with our latest news and events.</p>
+            <div class="newsletter-form">
+              <div class="input-group">
+                <input type="email" class="form-control" placeholder="Enter your email">
+                <button class="btn btn-primary">Subscribe</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="row align-items-center">
+          <div class="col-md-6">
+            <p class="mb-0">&copy; 2025 ARREMS. All rights reserved.</p>
+          </div>
+          <div class="col-md-6 text-md-end">
+            <ul class="footer-bottom-links">
+              <li><a href="#">Privacy Policy</a></li>
+              <li><a href="#">Terms of Service</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Custom Scripts -->
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/auth-forms.js"></script>
+  <script src="explore.js"></script>
+</body>
+</html>

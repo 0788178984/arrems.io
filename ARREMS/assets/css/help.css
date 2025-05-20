@@ -1,0 +1,79 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa; /* Light background similar to index.html */
+    color: #343a40; /* Dark text color */
+    margin: 0;
+    padding: 0;
+}
+
+.header {
+    background-color: #007bff; /* Primary color for header */
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #007bff; /* Primary color for titles */
+}
+
+.faq {
+    margin-bottom: 15px;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.faq-header {
+    background-color: #e9ecef; /* Light gray for header */
+    padding: 15px;
+    cursor: pointer;
+}
+
+.faq-header:hover {
+    background-color: #d3d3d3; /* Darker gray on hover */
+}
+
+.faq-content {
+    display: none; /* Hidden by default */
+    padding: 15px;
+    border-top: 1px solid #dee2e6;
+}
+
+.btn {
+    background-color: #007bff; /* Primary button color */
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    display: inline-block;
+    margin-top: 20px;
+}
+
+.btn:hover {
+    background-color: #0056b3; /* Darker shade on hover */
+}
+
+.footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #007bff; /* Primary color for footer */
+    color: white;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}

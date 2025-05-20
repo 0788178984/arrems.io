@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Published Virtual Tours</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            background: #1c1c1c;
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: #2d2d2d;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #3d3d3d;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .tours-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .tour-card {
+            background: #2d2d2d;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .tour-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .tour-thumbnail {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 1px solid #3d3d3d;
+            background: #3d3d3d;
+        }
+
+        .tour-info {
+            padding: 20px;
+        }
+
+        .tour-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .tour-description {
+            color: #ccc;
+            font-size: 14px;
+            margin-bottom: 15px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .tour-date {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            backdrop-filter: blur(5px);
+        }
+
+        .no-tours {
+            text-align: center;
+            grid-column: 1 / -1;
+            padding: 40px;
+            background: #2d2d2d;
+            border-radius: 10px;
+        }
+
+        .no-tours i {
+            font-size: 48px;
+            color: #4285f4;
+            margin-bottom: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            grid-column: 1 / -1;
+            padding: 40px;
+        }
+
+        .loading i {
+            font-size: 48px;
+            color: #4285f4;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            text-align: center;
+            grid-column: 1 / -1;
+            padding: 40px;
+            background: #2d2d2d;
+            border-radius: 10px;
+            color: #ff4444;
+        }
+
+        .debug-info {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            max-width: 400px;
+            max-height: 200px;
+            overflow: auto;
+            z-index: 1000;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .tours-container {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Published Virtual Tours</h1>
+        <p>Explore our collection of amazing virtual tours</p>
+    </div>
+
+    <div class="tours-container" id="toursContainer">
+        <div class="loading">
+            <i class="fas fa-spinner"></i>
+            <p>Loading tours...</p>
+        </div>
+    </div>
+
+    <div class="debug-info" id="debugInfo"></div>
+
+    <script>
+        // Debug function
+        function debugLog(message, data = null) {
+            const debugInfo = document.getElementById('debugInfo');
+            debugInfo.style.display = 'block';
+            const timestamp = new Date().toLocaleTimeString();
+            const logMessage = `[${timestamp}] ${message}\n`;
+            debugInfo.innerHTML += logMessage;
+            if (data) {
+                debugInfo.innerHTML += JSON.stringify(data, null, 2) + '\n\n';
+            }
+            console.log(message, data);
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        // Load and display published tours
+        async function loadPublishedTours() {
+            const container = document.getElementById('toursContainer');
+            
+            try {
+                // Get published tours from localStorage
+                const publishedTours = JSON.parse(localStorage.getItem('publishedTours')) || [];
+                
+                debugLog('Loaded tours:', publishedTours);
+                
+                // Clear loading state
+                container.innerHTML = '';
+                
+                if (!publishedTours || publishedTours.length === 0) {
+                    container.innerHTML = `
+                        <div class="no-tours">
+                            <i class="fas fa-camera-retro"></i>
+                            <h2>No Tours Available</h2>
+                            <p>Create and publish your first virtual tour to see it here.</p>
+                            <button onclick="window.location.href='index.html'" style="
+                                background: #4285f4;
+                                color: white;
+                                border: none;
+                                padding: 12px 24px;
+                                border-radius: 30px;
+                                font-size: 16px;
+                                font-weight: bold;
+                                cursor: pointer;
+                                margin-top: 20px;
+                                transition: background 0.3s;">
+                                Create New Tour
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Display tours
+                publishedTours.forEach(tour => {
+                    const tourCard = createTourCard(tour);
+                    container.appendChild(tourCard);
+                });
+                
+            } catch (error) {
+                debugLog('Error loading tours:', error);
+                container.innerHTML = `
+                    <div class="error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h2>Error Loading Tours</h2>
+                        <p>${error.message}</p>
+                        <button onclick="window.location.href='index.html'" style="
+                            background: #4285f4;
+                            color: white;
+                            border: none;
+                            padding: 12px 24px;
+                            border-radius: 30px;
+                            font-size: 16px;
+                            font-weight: bold;
+                            cursor: pointer;
+                            margin-top: 20px;
+                            transition: background 0.3s;">
+                            Return to Home
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // Create tour card element with improved UI
+        function createTourCard(tour) {
+            const card = document.createElement('div');
+            card.className = 'tour-card';
+            
+            // Get the first scene's image
+            const thumbnailUrl = tour.scenes && tour.scenes[0] && tour.scenes[0].imageUrl 
+                ? tour.scenes[0].imageUrl 
+                : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iIzNkM2QzZCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiNmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5ObyBJbWFnZSBBdmFpbGFibGU8L3RleHQ+PC9zdmc+';
+
+            card.innerHTML = `
+                <div class="tour-thumbnail-container" style="position: relative; overflow: hidden; border-radius: 10px 10px 0 0;">
+                    <img src="${thumbnailUrl}" alt="${tour.title}" class="tour-thumbnail" style="width: 100%; height: 200px; object-fit: cover;">
+                    <div class="tour-date" style="
+                        position: absolute;
+                        top: 10px;
+                        right: 10px;
+                        background: rgba(0, 0, 0, 0.7);
+                        color: white;
+                        padding: 5px 10px;
+                        border-radius: 15px;
+                        font-size: 12px;
+                        backdrop-filter: blur(5px);">
+                        ${formatDate(tour.publishDate)}
+                    </div>
+                </div>
+                <div class="tour-info" style="padding: 20px;">
+                    <h2 class="tour-title" style="
+                        font-size: 18px;
+                        font-weight: bold;
+                        margin-bottom: 10px;
+                        color: #fff;">${tour.title}</h2>
+                    <p class="tour-description" style="
+                        color: #ccc;
+                        font-size: 14px;
+                        margin-bottom: 15px;
+                        display: -webkit-box;
+                        -webkit-line-clamp: 3;
+                        -webkit-box-orient: vertical;
+                        overflow: hidden;">${tour.description || 'No description available'}</p>
+                    <button class="view-tour-btn" style="
+                        background: #4285f4;
+                        color: white;
+                        border: none;
+                        padding: 8px 16px;
+                        border-radius: 20px;
+                        font-size: 14px;
+                        cursor: pointer;
+                        transition: background 0.3s;">
+                        View Tour
+                    </button>
+                </div>
+            `;
+
+            // Add click handler to view the tour
+            const viewButton = card.querySelector('.view-tour-btn');
+            viewButton.addEventListener('click', () => {
+                window.location.href = `tour-view.html?tourId=${tour.id}`;
+            });
+
+            return card;
+        }
+
+        // Load tours when page loads
+        document.addEventListener('DOMContentLoaded', loadPublishedTours);
+
+        // Toggle debug panel with Ctrl+Shift+D
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+                const debugInfo = document.getElementById('debugInfo');
+                debugInfo.style.display = debugInfo.style.display === 'none' ? 'block' : 'none';
+            }
+        });
+    </script>
+</body>
+</html> 

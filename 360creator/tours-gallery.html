@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>360° Tours Gallery</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            background: #1c1c1c;
+            color: #fff;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #4285f4;
+        }
+
+        .header p {
+            color: #999;
+            font-size: 1.1em;
+        }
+
+        .tours-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .tour-card {
+            background: #2d2d2d;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .tour-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .tour-thumbnail {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .tour-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .tour-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .tour-card:hover .tour-overlay {
+            opacity: 1;
+        }
+
+        .view-tour-btn {
+            background: #4285f4;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .view-tour-btn:hover {
+            background: #3367d6;
+        }
+
+        .tour-info {
+            padding: 20px;
+        }
+
+        .tour-title {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .tour-description {
+            color: #999;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .tour-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .tour-price {
+            color: #4285f4;
+            font-weight: bold;
+        }
+
+        .tour-date {
+            color: #666;
+        }
+
+        .no-tours {
+            text-align: center;
+            padding: 40px;
+            background: #2d2d2d;
+            border-radius: 10px;
+            margin: 20px auto;
+            max-width: 600px;
+        }
+
+        .no-tours i {
+            font-size: 48px;
+            color: #4285f4;
+            margin-bottom: 20px;
+        }
+
+        .no-tours h2 {
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .no-tours p {
+            color: #999;
+        }
+
+        @media (max-width: 768px) {
+            .tours-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 15px;
+                padding: 10px;
+            }
+
+            .header {
+                padding: 10px;
+                margin-bottom: 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>360° Virtual Tours</h1>
+        <p>Explore amazing virtual tours created with our platform</p>
+    </div>
+
+    <div class="tours-grid" id="toursGrid">
+        <!-- Tours will be loaded here -->
+    </div>
+
+    <script>
+        // IndexedDB setup
+        const dbName = "360TourDB";
+        const dbVersion = 1;
+        let db;
+
+        // Initialize IndexedDB
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(dbName, dbVersion);
+                
+                request.onerror = (event) => {
+                    console.error("Error opening DB", event);
+                    reject("Error opening DB");
+                };
+                
+                request.onsuccess = (event) => {
+                    db = event.target.result;
+                    console.log("DB opened successfully");
+                    resolve(db);
+                };
+                
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains('tours')) {
+                        const tourStore = db.createObjectStore('tours', { keyPath: 'id' });
+                        tourStore.createIndex('date', 'date');
+                    }
+                    if (!db.objectStoreNames.contains('images')) {
+                        const imageStore = db.createObjectStore('images', { keyPath: 'id' });
+                    }
+                };
+            });
+        }
+
+        // Load all tours
+        async function loadTours() {
+            try {
+                const tx = db.transaction(['tours', 'images'], 'readonly');
+                const tourStore = tx.objectStore('tours');
+                const imageStore = tx.objectStore('images');
+
+                // Get all tours
+                const tours = await new Promise((resolve, reject) => {
+                    const request = tourStore.getAll();
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+
+                console.log('Found tours:', tours); // Debug log
+
+                if (!tours || tours.length === 0) {
+                    showNoToursMessage();
+                    return;
+                }
+
+                const toursGrid = document.getElementById('toursGrid');
+                toursGrid.innerHTML = '';
+
+                // Sort tours by date (newest first)
+                tours.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                for (const tour of tours) {
+                    try {
+                        // Get first scene's image for thumbnail
+                        if (tour.scenes && tour.scenes.length > 0) {
+                            const firstScene = tour.scenes[0];
+                            const imageData = await new Promise((resolve, reject) => {
+                                const request = imageStore.get(firstScene.imageId);
+                                request.onsuccess = () => resolve(request.result);
+                                request.onerror = () => reject(request.error);
+                            });
+
+                            if (!imageData || !imageData.blob) {
+                                console.error(`No image data found for tour ${tour.id}`);
+                                continue;
+                            }
+
+                            const thumbnailUrl = URL.createObjectURL(imageData.blob);
+                            createTourCard(tour, thumbnailUrl);
+                        }
+                    } catch (error) {
+                        console.error(`Error processing tour ${tour.id}:`, error);
+                        // Continue with next tour instead of failing completely
+                        continue;
+                    }
+                }
+
+            } catch (error) {
+                console.error('Error loading tours:', error);
+                showError('Failed to load tours: ' + error.message);
+            }
+        }
+
+        function createTourCard(tour, thumbnailUrl) {
+            const card = document.createElement('div');
+            card.className = 'tour-card';
+            card.innerHTML = `
+                <div class="tour-thumbnail">
+                    <img src="${thumbnailUrl}" alt="${tour.title}">
+                    <div class="tour-overlay">
+                        <button class="view-tour-btn">View Tour</button>
+                    </div>
+                </div>
+                <div class="tour-info">
+                    <h3 class="tour-title">${tour.title || 'Untitled Tour'}</h3>
+                    <p class="tour-description">${tour.description || 'No description available'}</p>
+                    <div class="tour-meta">
+                        <span class="tour-price">${tour.price || 'Free'}</span>
+                        <span class="tour-date">${new Date(tour.date).toLocaleDateString()}</span>
+                    </div>
+                </div>
+            `;
+
+            // Add click handler
+            card.addEventListener('click', () => {
+                window.location.href = `tour-view.html?tourId=${encodeURIComponent(tour.id)}`;
+            });
+
+            document.getElementById('toursGrid').appendChild(card);
+        }
+
+        function showNoToursMessage() {
+            const toursGrid = document.getElementById('toursGrid');
+            toursGrid.innerHTML = `
+                <div class="no-tours">
+                    <i class="fas fa-camera-retro"></i>
+                    <h2>No Tours Available</h2>
+                    <p>Create your first virtual tour to get started!</p>
+                    <button onclick="window.location.href='index.html'" class="button" style="margin-top: 20px;">
+                        <i class="fas fa-plus"></i> Create Tour
+                    </button>
+                </div>
+            `;
+        }
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.style.position = 'fixed';
+            errorDiv.style.top = '20px';
+            errorDiv.style.left = '50%';
+            errorDiv.style.transform = 'translateX(-50%)';
+            errorDiv.style.background = 'rgba(255, 0, 0, 0.8)';
+            errorDiv.style.color = 'white';
+            errorDiv.style.padding = '15px 30px';
+            errorDiv.style.borderRadius = '5px';
+            errorDiv.style.zIndex = '1000';
+            errorDiv.textContent = message;
+            document.body.appendChild(errorDiv);
+            setTimeout(() => errorDiv.remove(), 5000);
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                await initDB();
+                await loadTours();
+            } catch (error) {
+                console.error('Error initializing:', error);
+                showError('Failed to initialize: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html> 

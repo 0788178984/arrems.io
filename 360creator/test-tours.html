@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Tours</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .error { color: red; }
+        .success { color: green; }
+        pre { background: #f0f0f0; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Test Tours Page</h1>
+    <div id="status">Loading...</div>
+    <pre id="output"></pre>
+
+    <script>
+        async function testConnection() {
+            const status = document.getElementById('status');
+            const output = document.getElementById('output');
+            
+            try {
+                // Test the connection
+                status.textContent = 'Fetching data from published-tours.php...';
+                const response = await fetch('published-tours.php');
+                const text = await response.text();
+                
+                // Try to parse as JSON
+                try {
+                    const json = JSON.parse(text);
+                    status.className = 'success';
+                    status.textContent = 'Success! Data received and parsed correctly';
+                    output.textContent = 'Received data:\n' + JSON.stringify(json, null, 2);
+                } catch (e) {
+                    status.className = 'error';
+                    status.textContent = 'Error: Received data is not valid JSON';
+                    output.textContent = 'Raw response:\n' + text;
+                }
+            } catch (error) {
+                status.className = 'error';
+                status.textContent = 'Error: ' + error.message;
+                output.textContent = 'Failed to fetch data';
+            }
+        }
+
+        // Run the test when page loads
+        testConnection();
+    </script>
+</body>
+</html> 

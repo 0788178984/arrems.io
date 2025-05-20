@@ -1,0 +1,234 @@
+// Authentication related functions - DEBUG VERSION
+const API_BASE_URL = 'backend_PHP_files';
+
+// Enable console debugging
+const DEBUG = true;
+
+function debugLog(...args) {
+    if (DEBUG) {
+        console.log('[AUTH DEBUG]', ...args);
+    }
+}
+
+// Available roles for registration
+const AVAILABLE_ROLES = {
+    BUYER: 'buyer',
+    SELLER: 'seller',
+    MANAGER: 'manager',
+    STAKEHOLDER: 'stakeholder'
+};
+
+// Function to handle login
+async function login(email, password) {
+    debugLog('Login attempt for:', email);
+    
+    try {
+        if (!email || !password) {
+            debugLog('Missing credentials');
+            return { success: false, message: 'Please provide both email and password' };
+        }
+
+        if (!isValidEmail(email)) {
+            debugLog('Invalid email format');
+            return { success: false, message: 'Please enter a valid email address' };
+        }
+
+        debugLog('Making fetch request to:', `${API_BASE_URL}/login.php`);
+        
+        const response = await fetch(`${API_BASE_URL}/login.php`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({ email: email.trim(), password })
+        });
+
+        debugLog('Login response status:', response.status, response.statusText);
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            debugLog('Error response body:', errorText);
+            throw new Error(`HTTP error! status: ${response.status}, details: ${errorText}`);
+        }
+
+        // Try to parse the JSON response
+        let data;
+        try {
+            const responseText = await response.text();
+            debugLog('Response text:', responseText);
+            data = JSON.parse(responseText);
+        } catch (parseError) {
+            debugLog('Failed to parse JSON response:', parseError);
+            throw new Error('Invalid response format from server');
+        }
+        
+        debugLog('Login response data:', data);
+        
+        if (data.success) {
+            debugLog('Login successful, storing user data');
+            // Store user data in localStorage
+            localStorage.setItem('user', JSON.stringify(data.user));
+            
+            // Dispatch auth state change event
+            debugLog('Dispatching authStateChanged event');
+            const event = new Event('authStateChanged');
+            document.dispatchEvent(event);
+            
+            return { success: true, message: data.message, user: data.user };
+        } else {
+            debugLog('Login failed:', data.message);
+            return { success: false, message: data.message || 'Login failed' };
+        }
+    } catch (error) {
+        debugLog('Login error:', error);
+        return { 
+            success: false, 
+            message: `An error occurred during login: ${error.message}`,
+            error: error 
+        };
+    }
+}
+
+// Function to check authentication status with server
+async function checkAuthWithServer() {
+    debugLog('Checking authentication with server');
+    try {
+        const response = await fetch(`${API_BASE_URL}/check_auth.php`, {
+            method: 'GET',
+            credentials: 'include'
+        });
+        
+        debugLog('Auth check response status:', response.status);
+        
+        if (!response.ok) {
+            debugLog('Auth check response not OK');
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        debugLog('Auth check response data:', data);
+        
+        if (data.success && data.authenticated) {
+            debugLog('User is authenticated, updating localStorage');
+            // Update localStorage with latest user data
+            localStorage.setItem('user', JSON.stringify(data.user));
+            return true;
+        } else {
+            debugLog('User is not authenticated, clearing localStorage');
+            // Clear local storage if not authenticated
+            localStorage.removeItem('user');
+            return false;
+        }
+    } catch (error) {
+        debugLog('Auth check error:', error);
+        return false;
+    }
+}
+
+// Validation functions
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
+function isValidPassword(password) {
+    return password && password.length >= 8;
+}
+
+function isValidRole(role) {
+    const validRoles = Object.values(AVAILABLE_ROLES).map(r => r.toLowerCase());
+    return validRoles.includes(role.toLowerCase());
+}
+
+// Function to check if user is logged in
+function isLoggedIn() {
+    const user = localStorage.getItem('user');
+    debugLog('isLoggedIn check:', !!user);
+    return !!user;
+}
+
+// Function to get current user data
+function getCurrentUser() {
+    const user = localStorage.getItem('user');
+    return user ? JSON.parse(user) : null;
+}
+
+// Function to get user's full name
+function getUserFullName() {
+    const user = getCurrentUser();
+    return user ? `${user.first_name} ${user.last_name}` : '';
+}
+
+// Function to get user's role
+function getUserRole() {
+    const user = getCurrentUser();
+    return user ? user.role : null;
+}
+
+// Function to get available roles
+function getAvailableRoles() {
+    return AVAILABLE_ROLES;
+}
+
+// Function to handle logout
+async function logout() {
+    debugLog('Logging out user');
+    try {
+        // Call logout endpoint
+        const response = await fetch(`${API_BASE_URL}/logout.php`, {
+            method: 'POST',
+            credentials: 'include'
+        });
+        
+        debugLog('Logout response:', response.status);
+        
+        // Clear local storage
+        localStorage.removeItem('user');
+        
+        // Dispatch auth state change event
+        debugLog('Dispatching authStateChanged event');
+        const event = new Event('authStateChanged');
+        document.dispatchEvent(event);
+        
+        // Redirect to home page
+        debugLog('Redirecting to index.html');
+        window.location.href = 'index.html';
+    } catch (error) {
+        debugLog('Logout error:', error);
+        // Still clear local storage and redirect on error
+        localStorage.removeItem('user');
+        window.location.href = 'index.html';
+    }
+}
+
+// Export functions
+window.auth = {
+    login,
+    signup: async function(firstName, lastName, email, password, role) {
+        debugLog('This debug version does not implement signup. Use the main auth.js for that.');
+        return { success: false, message: 'Signup not implemented in debug version' };
+    },
+    isLoggedIn,
+    getCurrentUser,
+    getUserFullName,
+    getUserRole,
+    getAvailableRoles,
+    logout,
+    checkAuth: checkAuthWithServer
+};
+
+// Auto-check auth on page load
+debugLog('Auth.js.debug loaded, checking authentication state');
+document.addEventListener('DOMContentLoaded', async function() {
+    debugLog('DOM loaded, checking auth with server');
+    const isAuthenticated = await checkAuthWithServer();
+    debugLog('Authentication check complete, result:', isAuthenticated);
+    
+    if (typeof updateAuthUI === 'function') {
+        debugLog('Calling updateAuthUI function');
+        updateAuthUI(isAuthenticated);
+    } else {
+        debugLog('updateAuthUI function not found');
+    }
+}); 

@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARREMS - Debug Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { padding: 20px; }
+        .debug-output { background: #f8f9fa; border: 1px solid #dee2e6; padding: 10px; margin-top: 20px; min-height: 200px; }
+        .debug-actions { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ARREMS Debug Login</h1>
+        <p>This page helps isolate authentication issues by simplifying the login process.</p>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Login Form</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="debugLoginForm">
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email address</label>
+                                <input type="email" class="form-control" id="email" value="test@example.com">
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="password" value="password123">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Login</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="debug-actions">
+                    <button id="checkAuth" class="btn btn-info">Check Auth Status</button>
+                    <button id="logout" class="btn btn-warning">Logout</button>
+                    <button id="clearStorage" class="btn btn-danger">Clear Local Storage</button>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5>Debug Output</h5>
+                        <button id="clearOutput" class="btn btn-sm btn-outline-secondary">Clear</button>
+                    </div>
+                    <div class="card-body">
+                        <pre id="debugOutput" class="debug-output"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Local Storage</h5>
+                    </div>
+                    <div class="card-body">
+                        <pre id="storageDisplay"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Direct HTTP Tests</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <button id="testFetch" class="btn btn-outline-primary">Test Direct Fetch Login</button>
+                            <button id="testXhr" class="btn btn-outline-primary">Test XHR Login</button>
+                            <button id="testForm" class="btn btn-outline-primary">Test Form Submit</button>
+                        </div>
+                        <pre id="httpOutput" class="debug-output"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'backend_PHP_files';
+        
+        // Debug output function
+        function log(message, data = null) {
+            const output = document.getElementById('debugOutput');
+            const timestamp = new Date().toISOString().split('T')[1].substring(0, 8);
+            let logEntry = `[${timestamp}] ${message}`;
+            
+            if (data !== null) {
+                if (typeof data === 'object') {
+                    logEntry += '\n' + JSON.stringify(data, null, 2);
+                } else {
+                    logEntry += ' ' + data;
+                }
+            }
+            
+            output.textContent = logEntry + '\n' + output.textContent;
+        }
+
+        // HTTP output function
+        function httpLog(message, data = null) {
+            const output = document.getElementById('httpOutput');
+            const timestamp = new Date().toISOString().split('T')[1].substring(0, 8);
+            let logEntry = `[${timestamp}] ${message}`;
+            
+            if (data !== null) {
+                if (typeof data === 'object') {
+                    logEntry += '\n' + JSON.stringify(data, null, 2);
+                } else {
+                    logEntry += ' ' + data;
+                }
+            }
+            
+            output.textContent = logEntry + '\n' + output.textContent;
+        }
+
+        // Update storage display
+        function updateStorageDisplay() {
+            const storageDisplay = document.getElementById('storageDisplay');
+            const user = localStorage.getItem('user');
+            
+            if (user) {
+                try {
+                    const parsed = JSON.parse(user);
+                    storageDisplay.textContent = JSON.stringify(parsed, null, 2);
+                } catch (e) {
+                    storageDisplay.textContent = user + ' (invalid JSON)';
+                }
+            } else {
+                storageDisplay.textContent = 'No user data in localStorage';
+            }
+        }
+
+        // Login function
+        async function login(email, password) {
+            try {
+                log('Login attempt', { email });
+                
+                const response = await fetch(`${API_BASE_URL}/login.php`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ email, password })
+                });
+                
+                log('Response status', response.status);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    log('Error response', errorText);
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const responseText = await response.text();
+                log('Response text', responseText);
+                
+                let data;
+                try {
+                    data = JSON.parse(responseText);
+                } catch (e) {
+                    log('JSON parse error', e.message);
+                    throw new Error('Invalid JSON response');
+                }
+                
+                log('Parsed response', data);
+                
+                if (data.success) {
+                    log('Login successful');
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    updateStorageDisplay();
+                    return true;
+                } else {
+                    log('Login failed', data.message);
+                    return false;
+                }
+            } catch (error) {
+                log('Login error', error.message);
+                return false;
+            }
+        }
+
+        // Check auth status
+        async function checkAuthStatus() {
+            try {
+                log('Checking auth status');
+                
+                const response = await fetch(`${API_BASE_URL}/check_auth.php`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                
+                log('Response status', response.status);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    log('Error response', errorText);
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                log('Auth status', data);
+                
+                return data.authenticated === true;
+            } catch (error) {
+                log('Auth check error', error.message);
+                return false;
+            }
+        }
+
+        // Logout function
+        async function logoutUser() {
+            try {
+                log('Logging out');
+                
+                const response = await fetch(`${API_BASE_URL}/logout.php`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                
+                log('Logout response', response.status);
+                
+                localStorage.removeItem('user');
+                updateStorageDisplay();
+                
+                return true;
+            } catch (error) {
+                log('Logout error', error.message);
+                localStorage.removeItem('user');
+                updateStorageDisplay();
+                return false;
+            }
+        }
+
+        // Test direct fetch
+        async function testDirectFetch() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            httpLog('Testing direct fetch login', { email });
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/login.php`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ email, password })
+                });
+                
+                httpLog('Fetch response status', response.status);
+                
+                const responseText = await response.text();
+                httpLog('Fetch response text', responseText);
+                
+                try {
+                    const data = JSON.parse(responseText);
+                    httpLog('Parsed response', data);
+                } catch (e) {
+                    httpLog('JSON parse error', e.message);
+                }
+            } catch (error) {
+                httpLog('Fetch error', error.message);
+            }
+        }
+
+        // Test XHR
+        function testXhrLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            httpLog('Testing XHR login', { email });
+            
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', `${API_BASE_URL}/login.php`, true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.withCredentials = true;
+            
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    httpLog('XHR status', xhr.status);
+                    httpLog('XHR response', xhr.responseText);
+                    
+                    try {
+                        const data = JSON.parse(xhr.responseText);
+                        httpLog('Parsed XHR response', data);
+                    } catch (e) {
+                        httpLog('XHR JSON parse error', e.message);
+                    }
+                }
+            };
+            
+            xhr.send(JSON.stringify({ email, password }));
+        }
+
+        // Test form submit
+        function testFormSubmit() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            httpLog('Testing form submit', { email });
+            
+            // Create a form and submit it
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `${API_BASE_URL}/login.php`;
+            form.target = 'formResponseFrame';
+            
+            const emailInput = document.createElement('input');
+            emailInput.type = 'hidden';
+            emailInput.name = 'email';
+            emailInput.value = email;
+            form.appendChild(emailInput);
+            
+            const passwordInput = document.createElement('input');
+            passwordInput.type = 'hidden';
+            passwordInput.name = 'password';
+            passwordInput.value = password;
+            form.appendChild(passwordInput);
+            
+            // Create an iframe to receive the response
+            let iframe = document.getElementById('formResponseFrame');
+            if (!iframe) {
+                iframe = document.createElement('iframe');
+                iframe.name = 'formResponseFrame';
+                iframe.id = 'formResponseFrame';
+                iframe.style.display = 'none';
+                document.body.appendChild(iframe);
+                
+                iframe.onload = function() {
+                    try {
+                        const content = iframe.contentDocument.body.textContent;
+                        httpLog('Form response', content);
+                        
+                        try {
+                            const data = JSON.parse(content);
+                            httpLog('Parsed form response', data);
+                        } catch (e) {
+                            httpLog('Form JSON parse error', e.message);
+                        }
+                    } catch (e) {
+                        httpLog('Error reading iframe content', e.message);
+                    }
+                };
+            }
+            
+            document.body.appendChild(form);
+            form.submit();
+            document.body.removeChild(form);
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            log('Debug page loaded');
+            updateStorageDisplay();
+            
+            // Debug login form
+            document.getElementById('debugLoginForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                await login(email, password);
+            });
+            
+            // Check auth button
+            document.getElementById('checkAuth').addEventListener('click', async function() {
+                const isAuthenticated = await checkAuthStatus();
+                log('Authentication check result', isAuthenticated);
+            });
+            
+            // Logout button
+            document.getElementById('logout').addEventListener('click', async function() {
+                await logoutUser();
+                log('Logged out');
+            });
+            
+            // Clear storage button
+            document.getElementById('clearStorage').addEventListener('click', function() {
+                localStorage.removeItem('user');
+                updateStorageDisplay();
+                log('Local storage cleared');
+            });
+            
+            // Clear output button
+            document.getElementById('clearOutput').addEventListener('click', function() {
+                document.getElementById('debugOutput').textContent = '';
+            });
+            
+            // Direct HTTP test buttons
+            document.getElementById('testFetch').addEventListener('click', testDirectFetch);
+            document.getElementById('testXhr').addEventListener('click', testXhrLogin);
+            document.getElementById('testForm').addEventListener('click', testFormSubmit);
+        });
+    </script>
+</body>
+</html> 
