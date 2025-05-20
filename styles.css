@@ -1936,6 +1936,7 @@ main.col {
   position: relative;
   width: 100%;
   height: 70vh;
+  min-height: 300px;
   background-color: #000;
 }
 
@@ -2738,4 +2739,111 @@ main.col {
   .header-right {
     display: none;
   }
+}
+
+/* Mobile Responsive Adjustments */
+@media (max-width: 768px) {
+  .property-image {
+    height: 300px;
+  }
+
+  .hero-video-container,
+  .hero-video-container iframe,
+  .property-image iframe {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    min-height: 300px;
+  }
+
+  /* Ensure fullscreen works on mobile */
+  .property-image iframe:-webkit-full-screen {
+    width: 100vw;
+    height: 100vh;
+  }
+
+  .property-image iframe:-moz-full-screen {
+    width: 100vw;
+    height: 100vh;
+  }
+
+  .property-image iframe:-ms-fullscreen {
+    width: 100vw;
+    height: 100vh;
+  }
+
+  .property-image iframe:fullscreen {
+    width: 100vw;
+    height: 100vh;
+  }
+
+  /* Fix for iOS Safari */
+  .property-image {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* 360 Creator Specific Styles */
+.viewer-content {
+  position: relative;
+  width: 100%;
+  height: 70vh;
+  min-height: 300px;
+  background-color: #000;
+}
+
+.viewer-content iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+@media (max-width: 768px) {
+  .viewer-content {
+    height: 50vh;
+    min-height: 250px;
+  }
+
+  .viewer-content iframe {
+    width: 100vw;
+    height: 100%;
+    min-height: 250px;
+  }
+
+  /* Ensure proper fullscreen on mobile */
+  .viewer-content iframe:-webkit-full-screen {
+    width: 100vw !important;
+    height: 100vh !important;
+  }
+
+  .viewer-content iframe:-moz-full-screen {
+    width: 100vw !important;
+    height: 100vh !important;
+  }
+
+  .viewer-content iframe:-ms-fullscreen {
+    width: 100vw !important;
+    height: 100vh !important;
+  }
+
+  .viewer-content iframe:fullscreen {
+    width: 100vw !important;
+    height: 100vh !important;
+  }
+}
+
+/* Fix for iOS Safari scrolling */
+.viewer-content,
+.property-image,
+.hero-video-container {
+  -webkit-overflow-scrolling: touch;
+  overflow: auto;
+}
+
+/* Ensure iframes are responsive */
+iframe {
+  max-width: 100%;
+  width: 100%;
+  height: 100%;
+  border: 0;
 }
